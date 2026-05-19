@@ -1,0 +1,79 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial;
+}
+
+body{
+  background:#121212;
+  color:white;
+  min-height:100vh;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.contenedor{
+  width:90%;
+  max-width:500px;
+
+  background:#1e1e1e;
+
+  padding:20px;
+
+  border-radius:15px;
+}
+
+h1{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.formulario{
+  display:flex;
+  gap:10px;
+}
+
+input{
+  flex:1;
+
+  padding:10px;
+
+  border:none;
+
+  border-radius:8px;
+}
+
+button{
+  padding:10px 15px;
+
+  border:none;
+
+  border-radius:8px;
+
+  background:#4caf50;
+
+  color:white;
+
+  cursor:pointer;
+}
+
+.tarea{
+  background:#2a2a2a;
+
+  padding:12px;
+
+  margin-top:10px;
+
+  border-radius:10px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.eliminar{
+  background:red;
+}
