@@ -1,4 +1,13 @@
-let tareas = [];
+let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
+
+function guardarTareas(){
+
+  localStorage.setItem(
+    "tareas",
+    JSON.stringify(tareas)
+  );
+
+}
 
 function agregarTarea(){
 
@@ -16,6 +25,7 @@ function agregarTarea(){
   estado: "pendiente"
 });
 
+  guardarTareas();
   mostrarTareas();
 
   input.value = "";
@@ -72,13 +82,14 @@ function eliminarTarea(indice){
 
   tareas.splice(indice,1);
 
+  guardarTareas();
   mostrarTareas();
 }
 
 function completarTarea(indice){
 
   tareas[indice].estado = "completado";
-
+  guardarTareas();
   mostrarTareas();
 }
 
@@ -86,5 +97,8 @@ function fallarTarea(indice){
 
   tareas[indice].estado = "no-completado";
 
+  guardarTareas();
   mostrarTareas();
 }
+
+mostrarTareas();
