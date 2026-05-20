@@ -11,7 +11,10 @@ function agregarTarea(){
     return;
   }
 
-  tareas.push(texto);
+  tareas.push({
+  texto: texto,
+  estado: "pendiente"
+});
 
   mostrarTareas();
 
@@ -26,10 +29,30 @@ function mostrarTareas(){
 
   for(let i = 0; i < tareas.length; i++){
 
-    lista.innerHTML += `
-      <div class="tarea">
+  let color = "";
 
-        <span>${tareas[i]}</span>
+  if(tareas[i].estado === "completado"){
+    color = "verde";
+  }
+
+  else if(tareas[i].estado === "no-completado"){
+    color = "rojo";
+  }
+
+  lista.innerHTML += `
+    <div class="tarea ${color}">
+
+      <span>${tareas[i].texto}</span>
+
+      <div>
+
+        <button onclick="completarTarea(${i})">
+          ✓
+        </button>
+
+        <button onclick="fallarTarea(${i})">
+          ✕
+        </button>
 
         <button
           class="eliminar"
@@ -39,13 +62,29 @@ function mostrarTareas(){
         </button>
 
       </div>
-    `;
-  }
+
+    </div>
+  `;
+}
 }
 
 function eliminarTarea(indice){
 
   tareas.splice(indice,1);
+
+  mostrarTareas();
+}
+
+function completarTarea(indice){
+
+  tareas[indice].estado = "completado";
+
+  mostrarTareas();
+}
+
+function fallarTarea(indice){
+
+  tareas[indice].estado = "no-completado";
 
   mostrarTareas();
 }
