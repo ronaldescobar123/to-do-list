@@ -102,3 +102,16 @@ function fallarTarea(indice){
 }
 
 mostrarTareas();
+
+fetch("/tareas")
+  .then(function(res){
+    return res.json();
+  })
+
+  .then(function(datos){
+
+    tareas = datos;
+
+    mostrarTareas();
+
+  });
