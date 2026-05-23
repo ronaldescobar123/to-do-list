@@ -20,15 +20,32 @@ function agregarTarea(){
     return;
   }
 
-  tareas.push({
-  texto: texto,
-  estado: "pendiente"
-});
+  fetch("/tareas", {
 
-  guardarTareas();
-  mostrarTareas();
+  method: "POST",
+
+  headers: {
+    "Content-Type": "application/json"
+  },
+
+  body: JSON.stringify({
+    texto: texto,
+    estado: "pendiente"
+  })
+
+})
+
+.then(function(res){
+  return res.json();
+})
+
+.then(function(datos){
+
+  console.log(datos);
 
   input.value = "";
+
+});
 }
 
 function mostrarTareas(){
