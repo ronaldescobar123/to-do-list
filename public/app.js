@@ -1,5 +1,23 @@
 let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
 
+function cargarTareas(){
+
+  fetch("/tareas")
+
+    .then(function(res){
+      return res.json();
+    })
+
+    .then(function(datos){
+
+      tareas = datos;
+
+      mostrarTareas();
+
+    });
+
+}
+
 function guardarTareas(){
 
   localStorage.setItem(
@@ -44,6 +62,8 @@ function agregarTarea(){
   console.log(datos);
 
   input.value = "";
+
+  cargarTareas();
 
 });
 }
