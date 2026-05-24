@@ -117,25 +117,84 @@ function mostrarTareas(){
 
 function eliminarTarea(indice){
 
-  tareas.splice(indice,1);
+  fetch("/tareas/" + indice, {
 
-  guardarTareas();
-  mostrarTareas();
+    method: "DELETE"
+
+  })
+
+  .then(function(res){
+    return res.json();
+  })
+
+  .then(function(datos){
+
+    console.log(datos);
+
+    cargarTareas();
+
+  });
+
 }
 
 function completarTarea(indice){
 
-  tareas[indice].estado = "completado";
-  guardarTareas();
-  mostrarTareas();
+  fetch("/tareas/" + indice, {
+
+    method: "PUT",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      estado: "completado"
+    })
+
+  })
+
+  .then(function(res){
+    return res.json();
+  })
+
+  .then(function(datos){
+
+    console.log(datos);
+
+    cargarTareas();
+
+  });
+
 }
 
 function fallarTarea(indice){
 
-  tareas[indice].estado = "no-completado";
+  fetch("/tareas/" + indice, {
 
-  guardarTareas();
-  mostrarTareas();
+    method: "PUT",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      estado: "no-completado"
+    })
+
+  })
+
+  .then(function(res){
+    return res.json();
+  })
+
+  .then(function(datos){
+
+    console.log(datos);
+
+    cargarTareas();
+
+  });
+
 }
 
 mostrarTareas();

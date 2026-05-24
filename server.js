@@ -2,9 +2,9 @@ const express = require("express");
 
 const app = express();
 
-app.use(express.static("public"));
-
 app.use(express.json());
+
+app.use(express.static("public"));
 
 let tareas = [];
 
@@ -20,6 +20,32 @@ app.post("/tareas", function(req, res){
 
   res.json({
     mensaje: "Tarea guardada"
+  });
+
+});
+
+app.put("/tareas/:id", function(req, res){
+
+  const id = req.params.id;
+
+  const nuevoEstado = req.body.estado;
+
+  tareas[id].estado = nuevoEstado;
+
+  res.json({
+    mensaje: "Estado actualizado"
+  });
+
+});
+
+app.delete("/tareas/:id", function(req, res){
+
+  const id = req.params.id;
+
+  tareas.splice(id, 1);
+
+  res.json({
+    mensaje: "Tarea eliminada"
   });
 
 });
