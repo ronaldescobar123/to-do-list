@@ -1,213 +1,377 @@
-let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
+function TaskItem({ tarea, indice, onCompletar, onFallar, onEliminar }) {
+  const clase =
+    tarea.estado === "completado"
+      ? "verde"
+      : tarea.estado === "no-completado"
+      ? "rojo"
+      : "";
 
-function cargarTareas(){
-
-  fetch("/tareas")
-
-    .then(function(res){
-      return res.json();
-    })
-
-    .then(function(datos){
-
-      tareas = datos;
-
-      mostrarTareas();
-
-    });
-
-}
-
-function guardarTareas(){
-
-  localStorage.setItem(
-    "tareas",
-    JSON.stringify(tareas)
-  );
-
-}
-
-function agregarTarea(){
-
-  const input = document.getElementById("inputTarea");
-
-  const texto = input.value;
-
-  if(texto === ""){
-    alert("Escribe una tarea");
-    return;
-  }
-
-  fetch("/tareas", {
-
-  method: "POST",
-
-  headers: {
-    "Content-Type": "application/json"
-  },
-
-  body: JSON.stringify({
-    texto: texto,
-    estado: "pendiente"
-  })
-
-})
-
-.then(function(res){
-  return res.json();
-})
-
-.then(function(datos){
-
-  console.log(datos);
-
-  input.value = "";
-
-  cargarTareas();
-
-});
-}
-
-function mostrarTareas(){
-
-  const lista = document.getElementById("listaTareas");
-
-  lista.innerHTML = "";
-
-  for(let i = 0; i < tareas.length; i++){
-
-  let color = "";
-
-  if(tareas[i].estado === "completado"){
-    color = "verde";
-  }
-
-  else if(tareas[i].estado === "no-completado"){
-    color = "rojo";
-  }
-
-  lista.innerHTML += `
-    <div class="tarea ${color}">
-
-      <span>${tareas[i].texto}</span>
+  return (
+    <div className={`tarea ${clase}`}>
+      <span>{tarea.texto}</span>
 
       <div>
+        <button onClick={() => onCompletar(indice)}>✓</button>
 
-        <button onclick="completarTarea(${i})">
-          ✓
-        </button>
-
-        <button onclick="fallarTarea(${i})">
-          ✕
-        </button>
+        <button onClick={() => onFallar(indice)}>✕</button>
 
         <button
-          class="eliminar"
-          onclick="eliminarTarea(${i})"
+          className="eliminar"
+          onClick={() => onEliminar(indice)}
         >
           X
         </button>
-
       </div>
-
     </div>
-  `;
-}
-}
-
-function eliminarTarea(indice){
-
-  fetch("/tareas/" + indice, {
-
-    method: "DELETE"
-
-  })
-
-  .then(function(res){
-    return res.json();
-  })
-
-  .then(function(datos){
-
-    console.log(datos);
-
-    cargarTareas();
-
-  });
-
+  );
 }
 
-function completarTarea(indice){
+function TaskList({
+  tareas,
+  onCompletar,
+  onFallar,
+  onEliminar
+}) {
+  return (
+    <section id="listaTareas">
+      {tareas.map((tarea, i) => (
+        <TaskItem
+          key={i}
+          tarea={tarea}
+          indice={i}
+          onCompletar={onCompletar}
+          onFallar={onFallar}
+          onEliminar={onEliminar}
+        />
+      ))}
+    </section>
+  );
+}
 
-  fetch("/tareas/" + indice, {
+function App() {
+  const [texto, setTexto] = React.useState("");
 
-    method: "PUT",
+  const [tareas, setTareas] = React.useState([]);
 
-    headers: {
-      "Content-Type": "application/json"
-    },
+  React.useEffect(() => {
+    fetch("/tareas")
+      .then(res => res.json())
+      .then(datos => setTareas(datos))
+      .catch(err => console.error(err));
+  }, []);
 
-    body: JSON.stringify({
-      estado: "completado"
+  const agregarTarea = (e) => {
+    e.preventDefault();
+
+    if (!texto.trim()) {
+      alert("Escribe una tarea");
+      return;
+    }
+
+    fetch("/tareas", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        texto,
+        estado: "pendiente"
+      })
     })
 
-  })
+      .then(res => res.json())
 
-  .then(function(res){
-    return res.json();
-  })
+      .then(() => {
+        setTexto("");
 
-  .then(function(datos){
+        return fetch("/tareas")
+          .then(res => res.json())
+          .then(datos => setTareas(datos));
+      })
 
-    console.log(datos);
+      .catch(err => console.error(err));
+  };
 
-    cargarTareas();
+  const completarTarea = (indice) => {
+    fetch("/tareas/" + indice, {
+      method: "PUT",
 
-  });
+      headers: {
+        "Content-Type": "application/json"
+      },
 
-}
-
-function fallarTarea(indice){
-
-  fetch("/tareas/" + indice, {
-
-    method: "PUT",
-
-    headers: {
-      "Content-Type": "application/json"
-    },
-
-    body: JSON.stringify({
-      estado: "no-completado"
+      body: JSON.stringify({
+        estado: "completado"
+      })
     })
 
-  })
+      .then(() =>
+        fetch("/tareas")
+          .then(res => res.json())
+          .then(datos => setTareas(datos))
+      )
 
-  .then(function(res){
-    return res.json();
-  })
+      .catch(err => console.error(err));
+  };
 
-  .then(function(datos){
+  const fallarTarea = (indice) => {
+    fetch("/tareas/" + indice, {
+      method: "PUT",
 
-    console.log(datos);
+      headers: {
+        "Content-Type": "application/json"
+      },
 
-    cargarTareas();
+      body: JSON.stringify({
+        estado: "no-completado"
+      })
+    })
 
-  });
+      .then(() =>
+        fetch("/tareas")
+          .then(res => res.json())
+          .then(datos => setTareas(datos))
+      )
 
+      .catch(err => console.error(err));
+  };
+
+  const eliminarTarea = (indice) => {
+    fetch("/tareas/" + indice, {
+      method: "DELETE"
+    })
+
+      .then(() =>
+        fetch("/tareas")
+          .then(res => res.json())
+          .then(datos => setTareas(datos))
+      )
+
+      .catch(err => console.error(err));
+  };
+
+  return (
+    <main className="contenedor">
+      <h1>To-Do List</h1>
+
+      <form
+        className="formulario"
+        onSubmit={agregarTarea}
+      >
+        <input
+          type="text"
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          placeholder="Escribe una tarea"
+        />
+
+        <button type="submit">
+          Agregar
+        </button>
+      </form>
+
+      <TaskList
+        tareas={tareas}
+        onCompletar={completarTarea}
+        onFallar={fallarTarea}
+        onEliminar={eliminarTarea}
+      />
+    </main>
+  );
 }
 
-mostrarTareas();
+const root = ReactDOM.createRoot(
+  document.getElementById("root")
+);
 
-fetch("/tareas")
-  .then(function(res){
-    return res.json();
-  })
+root.render(<App />);function TaskItem({ tarea, indice, onCompletar, onFallar, onEliminar }) {
+  const clase =
+    tarea.estado === "completado"
+      ? "verde"
+      : tarea.estado === "no-completado"
+      ? "rojo"
+      : "";
 
-  .then(function(datos){
+  return (
+    <div className={`tarea ${clase}`}>
+      <span>{tarea.texto}</span>
 
-    tareas = datos;
+      <div>
+        <button onClick={() => onCompletar(indice)}>✓</button>
 
-    mostrarTareas();
+        <button onClick={() => onFallar(indice)}>✕</button>
 
-  });
+        <button
+          className="eliminar"
+          onClick={() => onEliminar(indice)}
+        >
+          X
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function TaskList({
+  tareas,
+  onCompletar,
+  onFallar,
+  onEliminar
+}) {
+  return (
+    <section id="listaTareas">
+      {tareas.map((tarea, i) => (
+        <TaskItem
+          key={i}
+          tarea={tarea}
+          indice={i}
+          onCompletar={onCompletar}
+          onFallar={onFallar}
+          onEliminar={onEliminar}
+        />
+      ))}
+    </section>
+  );
+}
+
+function App() {
+  const [texto, setTexto] = React.useState("");
+
+  const [tareas, setTareas] = React.useState([]);
+
+  React.useEffect(() => {
+    fetch("/tareas")
+      .then(res => res.json())
+      .then(datos => setTareas(datos))
+      .catch(err => console.error(err));
+  }, []);
+
+  const agregarTarea = (e) => {
+    e.preventDefault();
+
+    if (!texto.trim()) {
+      alert("Escribe una tarea");
+      return;
+    }
+
+    fetch("/tareas", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        texto,
+        estado: "pendiente"
+      })
+    })
+
+      .then(res => res.json())
+
+      .then(() => {
+        setTexto("");
+
+        return fetch("/tareas")
+          .then(res => res.json())
+          .then(datos => setTareas(datos));
+      })
+
+      .catch(err => console.error(err));
+  };
+
+  const completarTarea = (indice) => {
+    fetch("/tareas/" + indice, {
+      method: "PUT",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        estado: "completado"
+      })
+    })
+
+      .then(() =>
+        fetch("/tareas")
+          .then(res => res.json())
+          .then(datos => setTareas(datos))
+      )
+
+      .catch(err => console.error(err));
+  };
+
+  const fallarTarea = (indice) => {
+    fetch("/tareas/" + indice, {
+      method: "PUT",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        estado: "no-completado"
+      })
+    })
+
+      .then(() =>
+        fetch("/tareas")
+          .then(res => res.json())
+          .then(datos => setTareas(datos))
+      )
+
+      .catch(err => console.error(err));
+  };
+
+  const eliminarTarea = (indice) => {
+    fetch("/tareas/" + indice, {
+      method: "DELETE"
+    })
+
+      .then(() =>
+        fetch("/tareas")
+          .then(res => res.json())
+          .then(datos => setTareas(datos))
+      )
+
+      .catch(err => console.error(err));
+  };
+
+  return (
+    <main className="contenedor">
+      <h1>To-Do List</h1>
+
+      <form
+        className="formulario"
+        onSubmit={agregarTarea}
+      >
+        <input
+          type="text"
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          placeholder="Escribe una tarea"
+        />
+
+        <button type="submit">
+          Agregar
+        </button>
+      </form>
+
+      <TaskList
+        tareas={tareas}
+        onCompletar={completarTarea}
+        onFallar={fallarTarea}
+        onEliminar={eliminarTarea}
+      />
+    </main>
+  );
+}
+
+const root = ReactDOM.createRoot(
+  document.getElementById("root")
+);
+
+root.render(<App />);
