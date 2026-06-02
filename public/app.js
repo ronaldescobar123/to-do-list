@@ -37,7 +37,11 @@ function TaskList({ tareas, onCompletar, onFallar, onEliminar }) {
 function App() {
   const [texto, setTexto] = React.useState("");
   const [tareas, setTareas] = React.useState([]);
-
+  const [usuario, setUsuario] = React.useState(null);
+  
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [errorLogin, setErrorLogin] = React.useState("");
 
   const cargarTareas = React.useCallback(async () => {
     try {
@@ -48,16 +52,40 @@ function App() {
       console.error("Error al cargar tareas:", err);
     }
   }, []); 
-  React.useEffect(() => {
-    cargarTareas();
-  }, [cargarTareas]);  
+   React.useEffect(() => {
+    if (usuario) {
+      cargarTareas();
+    }
+  }, [cargarTareas, usuario]);
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    if (!username || !password) {
+      setErrorLogin("Por favor completa todos los campos");
+      return;
+    }
+
+    if (username === "admin" && password === "1234") {
+      setUsuario({ nombre: username });
+      setErrorLogin("");
+      setUsername("");
+      setPassword("");
+    } else {
+      setErrorLogin("Usuario o contraseña incorrectos");
+    }
+  };
+  const logout = () => {
+    setUsuario(null);
+    setTareas([]);
+    setUsername("");
+    setPassword("");
+  };
   const agregarTarea = async (e) => {
     e.preventDefault();
     if (!texto.trim()) {
       alert("Escribe una tarea");
       return;
     }
-
     try {
       await fetch("/tareas", {
         method: "POST",
@@ -106,10 +134,49 @@ function App() {
       console.error("Error al eliminar tarea:", err);
     }
   };
+  if (!usuario) {
+    return (
+      <main className="contenedor login-page">
+        <div className="login-container">
+          <h2>Iniciar Sesión</h2>
+          
+          <form onSubmit={handleLogin}>
+            <div className="input-group">
+              <label>Usuario:</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Ingresa tu usuario"
+              />
+            </div>
 
+            <div className="input-group">
+              <label>Contraseña:</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Ingresa tu contraseña"
+              />
+            </div>
+
+            {errorLogin && <p className="error-login">{errorLogin}</p>}
+
+            <button type="submit" className="btn-login">Entrar</button>
+          </form>
+        </div>
+      </main>
+    );
+  }
   return (
     <main className="contenedor">
+     <div className="header-user">
+        <button onClick={logout} className="btn-logout">Cerrar Sesión</button>
+      </div>
+
       <h1>To-Do List</h1>
+    
       <form className="formulario" onSubmit={agregarTarea}>
         <input
           type="text"
