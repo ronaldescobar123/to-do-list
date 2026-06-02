@@ -1,13 +1,12 @@
+require("dotenv").config({ quiet: true });
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 const express = require("express");
 const mongoose = require("mongoose");
 const Tarea = require("./models/Tarea");
 
-const dns = require("dns");
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
-
-mongoose.connect(
-  "mongodb+srv://ronald:JrSOmjZX4Jj5tlh1@to-do-list.mc5r7mn.mongodb.net/todolist?retryWrites=true&w=majority&appName=to-do-list"
-)
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
   console.log("MongoDB conectado");
 })
@@ -20,7 +19,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 
-// GET - obtener todas las tareas desde MongoDB
+
 app.get("/tareas", async function(req, res) {
   try {
     const tareas = await Tarea.find();
@@ -30,7 +29,7 @@ app.get("/tareas", async function(req, res) {
   }
 });
 
-// POST - guardar nueva tarea en MongoDB
+
 app.post("/tareas", async function(req, res) {
   try {
     const nuevaTarea = new Tarea({
@@ -44,7 +43,7 @@ app.post("/tareas", async function(req, res) {
   }
 });
 
-// PUT - actualizar estado usando el _id de MongoDB
+
 app.put("/tareas/:id", async function(req, res) {
   try {
     await Tarea.findByIdAndUpdate(req.params.id, {
@@ -56,7 +55,7 @@ app.put("/tareas/:id", async function(req, res) {
   }
 });
 
-// DELETE - eliminar tarea usando el _id de MongoDB
+
 app.delete("/tareas/:id", async function(req, res) {
   try {
     await Tarea.findByIdAndDelete(req.params.id);
