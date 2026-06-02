@@ -38,61 +38,77 @@ function App() {
   const [texto, setTexto] = React.useState("");
   const [tareas, setTareas] = React.useState([]);
 
-  const cargarTareas = () => {
-    fetch("/tareas")
-      .then(res => res.json())
-      .then(datos => setTareas(datos))
-      .catch(err => console.error(err));
+ const cargarTareas = async () => {         
+    try {                                   
+      const res = await fetch("/tareas");     
+      const datos = await res.json();          
+      setTareas(datos);
+    } catch (err) {
+      console.error("Error al cargar tareas:", err);
+    }
   };
 
   React.useEffect(() => {
     cargarTareas();
   }, []);
 
-  const agregarTarea = (e) => {
+   const agregarTarea = async (e) => {         
     e.preventDefault();
     if (!texto.trim()) {
       alert("Escribe una tarea");
       return;
     }
-    fetch("/tareas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ texto, estado: "pendiente" })
-    })
-    .then(() => {
+
+    try {                                     
+      await fetch("/tareas", {                
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto, estado: "pendiente" })
+      });
+      
       setTexto("");
+      cargarTareas();                         
+    } catch (err) {
+      console.error("Error al agregar tarea:", err); 
+    }
+  };
+
+  const completarTarea = async (id) => {       
+    try {                                      
+      await fetch("/tareas/" + id, {           
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado: "completado" })
+      });
       cargarTareas();
-    })
-    .catch(err => console.error(err));
+    } catch (err) {
+      console.error("Error al completar tarea:", err);
+    }
   };
 
-  const completarTarea = (id) => {
-    fetch("/tareas/" + id, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ estado: "completado" })
-    })
-    .then(() => cargarTareas())
-    .catch(err => console.error(err));
+  const fallarTarea = async (id) => {         
+    try {                                     
+      await fetch("/tareas/" + id, {          
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado: "no-completado" })
+      });
+      cargarTareas();
+    } catch (err) {
+      console.error("Error al marcar como no completada:", err);
+    }
   };
 
-  const fallarTarea = (id) => {
-    fetch("/tareas/" + id, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ estado: "no-completado" })
-    })
-    .then(() => cargarTareas())
-    .catch(err => console.error(err));
+  const eliminarTarea = async (id) => {        
+    try {                                    
+      await fetch("/tareas/" + id, {          
+        method: "DELETE"
+      });
+      cargarTareas();
+    } catch (err) {
+      console.error("Error al eliminar tarea:", err);
+    }
   };
-
-  const eliminarTarea = (id) => {
-    fetch("/tareas/" + id, { method: "DELETE" })
-    .then(() => cargarTareas())
-    .catch(err => console.error(err));
-  };
-
   return (
     <main className="contenedor">
       <h1>To-Do List</h1>
