@@ -165,3 +165,56 @@ button:hover {
 .btn-logout:hover {
   background: #d32f2f;
 }
+
+.tarea-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tarea-texto {
+  font-size: 16px;
+}
+
+.tarea-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.prioridad {
+  background: #ff9800;
+  color: white;
+}
+
+.categoria {
+  background: #2196f3;
+  color: white;
+}
+
+.fecha {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.tarea-botones {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.formulario select {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #2a2a2a;
+  color: white;
+  cursor: pointer;
+}
