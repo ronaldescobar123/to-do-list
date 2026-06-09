@@ -34,7 +34,9 @@ app.post("/tareas", async function(req, res) {
   try {
     const nuevaTarea = new Tarea({
       texto: req.body.texto,
-      estado: req.body.estado || "pendiente"
+      estado: req.body.estado || "pendiente",
+      prioridad: req.body.prioridad || "media",
+      categoria: req.body.categoria || "general"
     });
     await nuevaTarea.save();
     res.json({ mensaje: "Tarea guardada" });

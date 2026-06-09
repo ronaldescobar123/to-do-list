@@ -99,6 +99,8 @@ function App() {
       return;
     }
     try {
+      console.log("prioridad:", prioridad);
+      console.log("categoria:", categoria);
       await fetch("/tareas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -198,12 +200,12 @@ function App() {
           onChange={(e) => setTexto(e.target.value)}
           placeholder="Escribe una tarea"
         />
-        <select value={prioridad} onChange={(e) => setPrioridad(e.target.value)}>
+        <select value={prioridad} onChange={function(e) { setPrioridad(e.target.value); }}>
           <option value="alta">Alta</option>
           <option value="media">Media</option>
           <option value="baja">Baja</option>
         </select>
-        <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+        <select value={categoria} onChange={function(e) { setCategoria(e.target.value); }}>
           <option value="trabajo">Trabajo</option>
           <option value="estudio">Estudio</option>
           <option value="personal">Personal</option>
