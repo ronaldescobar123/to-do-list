@@ -178,7 +178,6 @@ button {
   border-left: 5px solid red;
 }
 
-/* LOGIN */
 .login-page {
   display: flex;
   justify-content: center;
@@ -226,4 +225,93 @@ button {
   font-size: 14px;
   margin-bottom: 12px;
   text-align: center;
+}
+.drive-section {
+  margin-top: 50px;
+  padding-top: 35px;
+  border-top: 2px solid #333;
+}
+
+.drive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.drive-header h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.upload-area {
+  border: 2px dashed #555;
+  border-radius: 12px;
+  padding: 50px 20px;
+  text-align: center;
+  margin-bottom: 25px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: #252525;
+}
+
+.upload-area:hover {
+  border-color: #4caf50;
+  background: #2a2a2a;
+}
+
+.file-list {
+  max-height: 550px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.file-item {
+  background: #2a2a2a;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.file-item:hover {
+  background: #333;
+}
+
+.file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 16.5px;
+  word-break: break-all;
+  margin-bottom: 6px;
+}
+
+.file-meta {
+  font-size: 13.5px;
+  color: #999;
+}
+
+.file-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.file-actions button {
+  padding: 9px 16px;
+  font-size: 15px;
+}
+
+.btn-upload {
+  background: #2196f3;
+  padding: 12px 24px;
+  font-size: 16px;
+  white-space: nowrap;
 }
