@@ -189,9 +189,6 @@ function App() {
 
   return (
     <main className="contenedor">
-      <div className="header-user">
-        <button onClick={logout} className="btn-logout">Cerrar Sesión</button>
-      </div>
       <h1>To-Do List</h1>
       <form className="formulario" onSubmit={agregarTarea}>
         <input
@@ -200,18 +197,20 @@ function App() {
           onChange={(e) => setTexto(e.target.value)}
           placeholder="Escribe una tarea"
         />
-        <select value={prioridad} onChange={function(e) { setPrioridad(e.target.value); }}>
-          <option value="alta">Alta</option>
-          <option value="media">Media</option>
-          <option value="baja">Baja</option>
-        </select>
-        <select value={categoria} onChange={function(e) { setCategoria(e.target.value); }}>
-          <option value="trabajo">Trabajo</option>
-          <option value="estudio">Estudio</option>
-          <option value="personal">Personal</option>
-          <option value="general">General</option>
-        </select>
-        <button type="submit">Agregar</button>
+        <div className="formulario-fila">
+          <select value={prioridad} onChange={function(e) { setPrioridad(e.target.value); }}>
+            <option value="alta">Alta</option>
+            <option value="media">Media</option>
+            <option value="baja">Baja</option>
+          </select>
+          <select value={categoria} onChange={function(e) { setCategoria(e.target.value); }}>
+            <option value="trabajo">Trabajo</option>
+            <option value="estudio">Estudio</option>
+            <option value="personal">Personal</option>
+            <option value="general">General</option>
+          </select>
+        </div>
+        <button type="submit" className="btn-agregar">Agregar</button>
       </form>
       <TaskList
         tareas={tareas}
@@ -219,6 +218,9 @@ function App() {
         onFallar={fallarTarea}
         onEliminar={eliminarTarea}
       />
+      <div className="header-user">
+        <button onClick={logout} className="btn-logout">Cerrar Sesión</button>
+      </div>
     </main>
   );
 }
