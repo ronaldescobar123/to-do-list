@@ -1,7 +1,9 @@
 require("dotenv").config({ quiet: true });
 const dns = require("dns");
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
+dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1", "208.67.222.222"]);
 
+const https = require("https");
+const fs = require("fs");
 const express = require("express");
 const mongoose = require("mongoose");
 const Tarea = require("./models/Tarea");
@@ -19,7 +21,6 @@ const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 
-
 app.get("/tareas", async function(req, res) {
   try {
     const tareas = await Tarea.find();
@@ -28,7 +29,6 @@ app.get("/tareas", async function(req, res) {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 app.post("/tareas", async function(req, res) {
   try {
@@ -45,7 +45,6 @@ app.post("/tareas", async function(req, res) {
   }
 });
 
-
 app.put("/tareas/:id", async function(req, res) {
   try {
     await Tarea.findByIdAndUpdate(req.params.id, {
@@ -57,7 +56,6 @@ app.put("/tareas/:id", async function(req, res) {
   }
 });
 
-
 app.delete("/tareas/:id", async function(req, res) {
   try {
     await Tarea.findByIdAndDelete(req.params.id);
@@ -67,6 +65,11 @@ app.delete("/tareas/:id", async function(req, res) {
   }
 });
 
-app.listen(3000, () => {
-  console.log("Servidor funcionando en http://localhost:3000");
+const options = {
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem")
+};
+
+https.createServer(options, app).listen(3000, () => {
+  console.log("Servidor funcionando en https://localhost:3000");
 });
