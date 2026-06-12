@@ -117,6 +117,8 @@ function App() {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [errorLogin, setErrorLogin] = React.useState("");
+  const [modoRegistro, setModoRegistro] = React.useState(false);
+  const [mensajeInfo, setMensajeInfo] = React.useState("");
 
   const [archivos, setArchivos] = React.useState([]);
   
