@@ -307,6 +307,7 @@ function App() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Ingresa tu usuario"
+                autoComplete="off"
               />
             </div>
             <div className="input-group">
@@ -316,6 +317,7 @@ function App() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Ingresa tu contraseña"
+                autoComplete="off"
               />
             </div>
             {errorLogin && <p className="error-login">{errorLogin}</p>}
