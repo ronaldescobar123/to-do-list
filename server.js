@@ -67,6 +67,49 @@ app.delete("/tareas/:id", async function(req, res) {
   }
 });
 
+app.post("/registro", async function(req, res) {
+  try {
+    const { username, password } = req.body;
+
+    const existe = await Usuario.findOne({ username });
+    if (existe) {
+      return res.status(400).json({ error: "El usuario ya existe" });
+    }
+
+    const passwordEncriptada = await bcrypt.hash(password, 10);
+
+    const nuevoUsuario = new Usuario({
+      username,
+      password: passwordEncriptada
+    });
+
+    await nuevoUsuario.save();
+    res.json({ mensaje: "Usuario registrado correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/login", async function(req, res) {
+  try {
+    const { username, password } = req.body;
+
+    const usuario = await Usuario.findOne({ username });
+    if (!usuario) {
+      return res.status(400).json({ error: "Usuario o contraseña incorrectos" });
+    }
+
+    const passwordCorrecta = await bcrypt.compare(password, usuario.password);
+    if (!passwordCorrecta) {
+      return res.status(400).json({ error: "Usuario o contraseña incorrectos" });
+    }
+
+    res.json({ mensaje: "Login exitoso", username: usuario.username });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 const options = {
   key: fs.readFileSync("key.pem"),
   cert: fs.readFileSync("cert.pem")
