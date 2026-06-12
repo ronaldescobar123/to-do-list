@@ -7,6 +7,8 @@ const fs = require("fs");
 const express = require("express");
 const mongoose = require("mongoose");
 const Tarea = require("./models/Tarea");
+const bcrypt = require("bcryptjs");
+const Usuario = require("./models/Usuario");
 
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
