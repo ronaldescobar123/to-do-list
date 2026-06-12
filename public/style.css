@@ -315,3 +315,27 @@ button {
   font-size: 16px;
   white-space: nowrap;
 }
+
+.mensaje-info {
+  color: #4caf50;
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.cambiar-modo {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.cambiar-modo span {
+  color: #4caf50;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cambiar-modo span:hover {
+  text-decoration: underline;
+}

@@ -138,19 +138,61 @@ function App() {
     }
   }, [cargarTareas, usuario]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!username || !password) {
       setErrorLogin("Por favor completa todos los campos");
       return;
     }
-    if (username === "admin" && password === "1234") {
-      setUsuario({ nombre: username });
+    try {
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+      const datos = await res.json();
+
+      if (!res.ok) {
+        setErrorLogin(datos.error);
+        return;
+      }
+
+      setUsuario({ nombre: datos.username });
       setErrorLogin("");
       setUsername("");
       setPassword("");
-    } else {
-      setErrorLogin("Usuario o contraseña incorrectos");
+    } catch (err) {
+      setErrorLogin("Error al conectar con el servidor");
+    }
+  };
+
+  const handleRegistro = async (e) => {
+    e.preventDefault();
+    if (!username || !password) {
+      setErrorLogin("Por favor completa todos los campos");
+      return;
+    }
+    try {
+      const res = await fetch("/registro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+      const datos = await res.json();
+
+      if (!res.ok) {
+        setErrorLogin(datos.error);
+        setMensajeInfo("");
+        return;
+      }
+
+      setErrorLogin("");
+      setMensajeInfo("Usuario registrado correctamente. Ahora inicia sesión");
+      setModoRegistro(false);
+      setUsername("");
+      setPassword("");
+    } catch (err) {
+      setErrorLogin("Error al conectar con el servidor");
     }
   };
 
@@ -256,8 +298,8 @@ function App() {
     return (
       <main className="contenedor login-page">
         <div className="login-container">
-          <h2>Iniciar Sesión</h2>
-          <form onSubmit={handleLogin}>
+          <h2>{modoRegistro ? "Crear Cuenta" : "Iniciar Sesión"}</h2>
+          <form onSubmit={modoRegistro ? handleRegistro : handleLogin}>
             <div className="input-group">
               <label>Usuario:</label>
               <input
@@ -277,8 +319,23 @@ function App() {
               />
             </div>
             {errorLogin && <p className="error-login">{errorLogin}</p>}
-            <button type="submit" className="btn-login">Entrar</button>
+            {mensajeInfo && <p className="mensaje-info">{mensajeInfo}</p>}
+            <button type="submit" className="btn-login">
+              {modoRegistro ? "Registrarse" : "Entrar"}
+            </button>
           </form>
+          <p className="cambiar-modo">
+            {modoRegistro ? "¿Ya tienes cuenta?" : "¿No tienes cuenta?"}{" "}
+            <span
+              onClick={() => {
+                setModoRegistro(!modoRegistro);
+                setErrorLogin("");
+                setMensajeInfo("");
+              }}
+            >
+              {modoRegistro ? "Inicia sesión" : "Regístrate"}
+            </span>
+          </p>
         </div>
       </main>
     );
