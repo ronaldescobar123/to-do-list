@@ -107,7 +107,121 @@ function DriveSection({ archivos, onSubirArchivos, onDescargar, onEliminarArchiv
     </section>
   );
 }
+function RegisterForm({ setModoRegistro, setMensajeInfo, setErrorLogin }) {
+  const [formData, setFormData] = React.useState({
+    nombre: "",
+    apellido: "",
+    username: "",
+    email: "",
+    numero: "",
+    password: "",
+    confirmPassword: ""
+  });
 
+  const [errores, setErrores] = React.useState({});
+  const [cargando, setCargando] = React.useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errores[name]) {
+      setErrores(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validarFormulario = () => {
+    const nuevosErrores = {};
+
+    if (!formData.nombre.trim()) nuevosErrores.nombre = "Nombre requerido";
+    if (!formData.apellido.trim()) nuevosErrores.apellido = "Apellido requerido";
+    if (!formData.username.trim()) nuevosErrores.username = "Usuario requerido";
+    if (!formData.email.trim()) nuevosErrores.email = "Email requerido";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) nuevosErrores.email = "Email inválido";
+
+    if (!formData.numero.trim()) nuevosErrores.numero = "Número requerido";
+    else if (!/^\d{8,15}$/.test(formData.numero.replace(/\D/g, ''))) 
+      nuevosErrores.numero = "Número inválido";
+
+    if (!formData.password) nuevosErrores.password = "Contraseña requerida";
+    else if (formData.password.length < 6) nuevosErrores.password = "Mínimo 6 caracteres";
+
+    if (formData.password !== formData.confirmPassword) 
+      nuevosErrores.confirmPassword = "Las contraseñas no coinciden";
+
+    setErrores(nuevosErrores);
+    return Object.keys(nuevosErrores).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validarFormulario()) return;
+
+    setCargando(true);
+
+    setTimeout(() => {
+      setCargando(false);
+      setMensajeInfo("Usuario registrado");
+      setModoRegistro(false);
+
+      setFormData({
+        nombre: "", apellido: "", username: "", email: "", 
+        numero: "", password: "", confirmPassword: ""
+      });
+      setErrores({});
+    }, 800);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="input-group">
+        <label>Nombre *</label>
+        <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Tu nombre" />
+        {errores.nombre && <p className="error-field">{errores.nombre}</p>}
+      </div>
+
+      <div className="input-group">
+        <label>Apellido *</label>
+        <input type="text" name="apellido" value={formData.apellido} onChange={handleChange} placeholder="Tu apellido" />
+        {errores.apellido && <p className="error-field">{errores.apellido}</p>}
+      </div>
+
+      <div className="input-group">
+        <label>Usuario *</label>
+        <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Nombre de usuario" />
+        {errores.username && <p className="error-field">{errores.username}</p>}
+      </div>
+
+      <div className="input-group">
+        <label>Email *</label>
+        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="ejemplo@gmail.com" />
+        {errores.email && <p className="error-field">{errores.email}</p>}
+      </div>
+
+      <div className="input-group">
+        <label>Número de Teléfono *</label>
+        <input type="tel" name="numero" value={formData.numero} onChange={handleChange} placeholder="123456789" />
+        {errores.numero && <p className="error-field">{errores.numero}</p>}
+      </div>
+
+      <div className="input-group">
+        <label>Contraseña *</label>
+        <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Contraseña" />
+        {errores.password && <p className="error-field">{errores.password}</p>}
+      </div>
+
+      <div className="input-group">
+        <label>Confirmar Contraseña *</label>
+        <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Repetir contraseña" />
+        {errores.confirmPassword && <p className="error-field">{errores.confirmPassword}</p>}
+      </div>
+
+      <button type="submit" className="btn-login" disabled={cargando}>
+        {cargando ? "Procesando..." : "Registrarse"}
+      </button>
+    </form>
+  );
+}
+         
 function App() {
   const [texto, setTexto] = React.useState("");
   const [prioridad, setPrioridad] = React.useState("media");
@@ -119,7 +233,6 @@ function App() {
   const [errorLogin, setErrorLogin] = React.useState("");
   const [modoRegistro, setModoRegistro] = React.useState(false);
   const [mensajeInfo, setMensajeInfo] = React.useState("");
-
   const [archivos, setArchivos] = React.useState([]);
   
   const cargarTareas = React.useCallback(async () => {
@@ -299,33 +412,40 @@ function App() {
       <main className="contenedor login-page">
         <div className="login-container">
           <h2>{modoRegistro ? "Crear Cuenta" : "Iniciar Sesión"}</h2>
-          <form onSubmit={modoRegistro ? handleRegistro : handleLogin}>
-            <div className="input-group">
-              <label>Usuario:</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ingresa tu usuario"
-                autoComplete="off"
-              />
-            </div>
-            <div className="input-group">
-              <label>Contraseña:</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Ingresa tu contraseña"
-                autoComplete="off"
-              />
-            </div>
-            {errorLogin && <p className="error-login">{errorLogin}</p>}
-            {mensajeInfo && <p className="mensaje-info">{mensajeInfo}</p>}
-            <button type="submit" className="btn-login">
-              {modoRegistro ? "Registrarse" : "Entrar"}
-            </button>
-          </form>
+          
+          {modoRegistro ? (
+            <RegisterForm 
+              setModoRegistro={setModoRegistro}
+              setMensajeInfo={setMensajeInfo}
+              setErrorLogin={setErrorLogin}
+            />
+            ):(
+            <form onSubmit={handleLogin}>
+              <div className="input-group">
+                <label>Usuario:</label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Ingresa tu usuario"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="input-group">
+                <label>Contraseña:</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Ingresa tu contraseña"
+                  autoComplete="off"
+                />
+              </div>
+              {errorLogin && <p className="error-login">{errorLogin}</p>}
+              <button type="submit" className="btn-login">Entrar</button>
+            </form>
+          )}
+
           <p className="cambiar-modo">
             {modoRegistro ? "¿Ya tienes cuenta?" : "¿No tienes cuenta?"}{" "}
             <span
@@ -334,10 +454,11 @@ function App() {
                 setErrorLogin("");
                 setMensajeInfo("");
               }}
-            >
-              {modoRegistro ? "Inicia sesión" : "Regístrate"}
+            >{modoRegistro ? "Inicia sesión" : "Regístrate"}
             </span>
           </p>
+
+          {mensajeInfo && <p className="mensaje-info">{mensajeInfo}</p>}
         </div>
       </main>
     );
