@@ -270,6 +270,7 @@ function App() {
         return;
       }
 
+      localStorage.setItem("token", datos.token);
       setUsuario({ nombre: datos.username });
       setErrorLogin("");
       setUsername("");
@@ -310,6 +311,7 @@ function App() {
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
     setUsuario(null);
     setTareas([]);
     setArchivos([]);
@@ -475,12 +477,12 @@ function App() {
           placeholder="Escribe una tarea"
         />
         <div className="formulario-fila">
-          <select value={prioridad} onChange={function(e) { setPrioridad(e.target.value); }}>
+          <select value={prioridad} onChange={(e) => setPrioridad(e.target.value)}>
             <option value="alta">Alta</option>
             <option value="media">Media</option>
             <option value="baja">Baja</option>
           </select>
-          <select value={categoria} onChange={function(e) { setCategoria(e.target.value); }}>
+          <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
             <option value="trabajo">Trabajo</option>
             <option value="estudio">Estudio</option>
             <option value="personal">Personal</option>
