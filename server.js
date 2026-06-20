@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 const Tarea = require("./models/Tarea");
 const bcrypt = require("bcryptjs");
 const Usuario = require("./models/Usuario");
+const jwt = require("jsonwebtoken");
 
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
@@ -104,7 +105,13 @@ app.post("/login", async function(req, res) {
       return res.status(400).json({ error: "Usuario o contraseña incorrectos" });
     }
 
-    res.json({ mensaje: "Login exitoso", username: usuario.username });
+    const token = jwt.sign(
+      { username: usuario.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    res.json({ mensaje: "Login exitoso", username: usuario.username, token: token });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
