@@ -339,3 +339,22 @@ button {
 .cambiar-modo span:hover {
   text-decoration: underline;
 }
+
+.header-user {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+}
+
+.nombre-usuario {
+  font-size: 15px;
+  color: #ccc;
+}
+
+.usuario-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}

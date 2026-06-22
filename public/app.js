@@ -133,8 +133,9 @@ function App() {
 
   React.useEffect(() => {
     const tokenGuardado = localStorage.getItem("token");
-    if (tokenGuardado) {
-      setUsuario({ nombre: "Usuario" });
+    const usernameGuardado = localStorage.getItem("username");
+    if (tokenGuardado && usernameGuardado) {
+      setUsuario({ nombre: usernameGuardado });
     }
   }, []);
 
@@ -164,6 +165,7 @@ function App() {
       }
 
       localStorage.setItem("token", datos.token);
+      localStorage.setItem("username", datos.username);
       setUsuario({ nombre: datos.username });
       setErrorLogin("");
       setUsername("");
@@ -205,6 +207,7 @@ function App() {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username");
     setUsuario(null);
     setTareas([]);
     setArchivos([]);
@@ -355,7 +358,10 @@ function App() {
 
   return (
     <main className="contenedor">
-      <h1>To-Do List</h1>
+      <div className="usuario-top">
+        <span className="nombre-usuario">👤 {usuario.nombre}</span>
+      </div>
+    <h1>To-Do List</h1>
       <form className="formulario" onSubmit={agregarTarea}>
         <input
           type="text"
