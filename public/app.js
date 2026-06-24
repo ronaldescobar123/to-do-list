@@ -123,7 +123,12 @@ function App() {
   
   const cargarTareas = React.useCallback(async () => {
     try {
-      const res = await fetch("/tareas");
+      const token = localStorage.getItem("token");
+      const res = await fetch("/tareas", {
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      });
       const datos = await res.json();
       setTareas(datos);
     } catch (err) {
@@ -226,7 +231,10 @@ function App() {
       console.log("categoria:", categoria);
       await fetch("/tareas", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        },
         body: JSON.stringify({
           texto,
           estado: "pendiente",
@@ -247,7 +255,10 @@ function App() {
     try {
       await fetch("/tareas/" + id, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        },
         body: JSON.stringify({ estado: "completado" })
       });
       cargarTareas();
@@ -259,9 +270,12 @@ function App() {
   const fallarTarea = async (id) => {
     try {
       await fetch("/tareas/" + id, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estado: "no-completado" })
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      },
+      body: JSON.stringify({ estado: "no-completado" })
       });
       cargarTareas();
     } catch (err) {
@@ -271,7 +285,12 @@ function App() {
 
   const eliminarTarea = async (id) => {
     try {
-      await fetch("/tareas/" + id, { method: "DELETE" });
+      await fetch("/tareas/" + id, { 
+        method: "DELETE",
+        headers: {
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+      });
       cargarTareas();
     } catch (err) {
       console.error(err);
