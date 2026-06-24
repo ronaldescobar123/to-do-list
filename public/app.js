@@ -140,7 +140,21 @@ function App() {
     const tokenGuardado = localStorage.getItem("token");
     const usernameGuardado = localStorage.getItem("username");
     if (tokenGuardado && usernameGuardado) {
-      setUsuario({ nombre: usernameGuardado });
+      fetch("/tareas", {
+        headers: { "Authorization": "Bearer " + tokenGuardado }
+      })
+      .then(res => {
+        if (res.ok) {
+          setUsuario({ nombre: usernameGuardado });
+        } else {
+          localStorage.removeItem("token");
+          localStorage.removeItem("username");
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+      });
     }
   }, []);
 
