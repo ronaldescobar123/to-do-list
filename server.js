@@ -24,7 +24,24 @@ const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 
-app.get("/tareas", async function(req, res) {
+function verificarToken(req, res, next) {
+  const token = req.headers["authorization"];
+
+  if (!token) {
+    return res.status(401).json({ error: "Acceso denegado, token requerido" });
+  }
+
+  try {
+    const tokenLimpio = token.replace("Bearer ", "");
+    const datos = jwt.verify(tokenLimpio, process.env.JWT_SECRET);
+    req.usuario = datos;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Token inválido o expirado" });
+  }
+}
+
+app.get("/tareas", verificarToken, async function(req, res) {
   try {
     const tareas = await Tarea.find();
     res.json(tareas);
@@ -33,7 +50,7 @@ app.get("/tareas", async function(req, res) {
   }
 });
 
-app.post("/tareas", async function(req, res) {
+app.post("/tareas", verificarToken, async function(req, res) {
   try {
     const nuevaTarea = new Tarea({
       texto: req.body.texto,
@@ -48,7 +65,7 @@ app.post("/tareas", async function(req, res) {
   }
 });
 
-app.put("/tareas/:id", async function(req, res) {
+app.put("/tareas/:id", verificarToken, async function(req, res) {
   try {
     await Tarea.findByIdAndUpdate(req.params.id, {
       estado: req.body.estado
@@ -59,7 +76,7 @@ app.put("/tareas/:id", async function(req, res) {
   }
 });
 
-app.delete("/tareas/:id", async function(req, res) {
+app.delete("/tareas/:id", verificarToken, async function(req, res) {
   try {
     await Tarea.findByIdAndDelete(req.params.id);
     res.json({ mensaje: "Tarea eliminada" });
